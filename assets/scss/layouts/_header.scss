@@ -1,12 +1,57 @@
 .header {
-    background-color: $color-primary;
+    position: relative;
+    box-shadow: $shadow-bottom;  
+
+    &__band {
+        height: 10px;
+        background-color: $color-primary;
+    }
 
     &__logo {
-        height: 100px;
+        height: 80px;
         width: auto;
 
         @media screen and (max-width: #{$phone}) {
             height: 50px;
+        }
+    }
+
+    &__nav-link {
+        color: var(--bs-dark);
+        border-bottom: 1px solid $white;
+
+        &:hover, &.active {
+            color: var(--bs-dark);
+            border-bottom: 1px solid $color-primary;
+
+            @media screen and (max-width: #{$phone}) {
+                border: none;
+                color: $color-primary;
+                font-weight: bold;
+            }
+        }
+    }
+
+    &__cart {
+        top: 30%;
+        right: 4rem;
+
+        @media screen and (max-width: #{$phone}) {
+            top: 1rem;
+            right: 25%;
+        }
+    }
+
+    &__cart-logo {
+        height: 30px;
+        width: auto;
+
+        &:hover {
+            fill:$color-primary;
+        }
+
+        @media screen and (max-width: #{$phone}) {
+            height: 25px;
         }
     }
 }

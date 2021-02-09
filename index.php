@@ -1,7 +1,11 @@
 <!DOCTYPE HTML>
-<html lang="en">
+<html lang="fr">
     <head>
-        <?php require 'includes/head.inc.php'; ?>        
+        <?php 
+            $title = "Accueil - My Shop";
+            $description = "Magasin en ligne My Shop";
+            require 'includes/head.inc.php'; 
+        ?>        
     </head>
     <body>    
         <?php require 'includes/layouts/header.inc.php'; ?>

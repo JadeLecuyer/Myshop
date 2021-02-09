@@ -1,6 +1,8 @@
 <meta charset="UTF-8">
-<title>Projet My shop</title>
-<meta name="description" content="Online shop project for dev&go training course">
+<title>
+    <?= (isset($title)) ? $title : 'Projet my_shop' ; ?>
+</title>
+<meta name="description" content="<?= (isset($description)) ? $description : 'Projet e-commerce pour la formation dev&go'; ?>">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta1/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-giJF6kkoqNQ00vy+HMDP7azOuL0xtbfIcaT9wjKHr8RbDVddVHyTfAAsrekwKmP1" crossorigin="anonymous">
 <link rel="stylesheet" type="text/css" href="/assets/css/app.css">
