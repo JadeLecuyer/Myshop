@@ -16,6 +16,14 @@
         }
     }
 
+    &__nav-wrapper {
+        width: 90%;
+
+        @media screen and (max-width: #{$phone}) {
+            width: auto;
+        }
+    }
+
     &__nav-link {
         color: var(--bs-dark);
         border-bottom: 1px solid $white;
@@ -34,7 +42,7 @@
 
     &__cart {
         top: 30%;
-        right: 4rem;
+        right: 4%;
 
         @media screen and (max-width: #{$phone}) {
             top: 1rem;

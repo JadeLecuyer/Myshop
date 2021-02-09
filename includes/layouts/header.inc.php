@@ -12,18 +12,23 @@
             <button class="navbar-light navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
                 <span class="navbar-toggler-icon"></span>
             </button>
+
             <div class="collapse navbar-collapse" id="navbarSupportedContent">
-                <ul class="navbar-nav me-auto mb-2 mb-md-0 text-uppercase">
-                    <li class="nav-item">
-                        <a class="nav-link header__nav-link active" href="index.php">Shop</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link header__nav-link" href="#">Sign up</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link header__nav-link" href="#">Sign in</a>
-                    </li>
-                </ul>
+                <div class="d-flex justify-content-between text-uppercase header__nav-wrapper">
+                    <ul class="navbar-nav mb-2 mb-md-0">
+                        <li class="nav-item">
+                            <a class="nav-link header__nav-link <?= ($currentPage == 'index') ? 'active' : '' ?>" href="index.php">Boutique</a>
+                        </li>
+                    </ul>
+                    <ul class="navbar-nav mb-2 mb-md-0">
+                        <li class="nav-item">
+                            <a class="nav-link header__nav-link <?= ($currentPage == 'signup') ? 'active' : '' ?>" href="#">S'inscrire</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link header__nav-link <?= ($currentPage == 'signin') ? 'active' : '' ?>" href="#">Se connecter</a>
+                        </li>
+                    </ul>
+                </div>
             </div>
                 
         <a class="position-absolute link-dark header__cart" href="#">
