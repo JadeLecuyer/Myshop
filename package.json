@@ -1,0 +1,26 @@
+{
+  "name": "my_shop",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "dependencies": {},
+  "devDependencies": {
+    "node-sass": "^5.0.0",
+    "sass": "^1.32.6"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "scss": "./node_modules/.bin/node-sass --watch assets/scss -o assets/css",
+    "build": "./node_modules/.bin/node-sass assets/scss -o assets/css"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/EpitechIT2020/C-RDG-114-FR-1-2-myshop-jade.lecuyer.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/EpitechIT2020/C-RDG-114-FR-1-2-myshop-jade.lecuyer/issues"
+  },
+  "homepage": "https://github.com/EpitechIT2020/C-RDG-114-FR-1-2-myshop-jade.lecuyer#readme"
+}
