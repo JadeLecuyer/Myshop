@@ -1,7 +1,7 @@
-    <footer class="footer position-absolute bottom-0 w-100">
+    <footer class="footer w-100 mt-5 position-absolute bottom-0">
         <div class="container-fluid d-flex justify-content-center">
             <a href="index.php">
-                <img src="/assets/img/logo.png" alt="Brand logo" class="footer__logo">
+                <img src="/assets/img/whitelogo.png" alt="Brand logo" class="footer__logo">
             </a>
         </div>
     </footer>

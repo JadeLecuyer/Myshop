@@ -4,8 +4,6 @@
     &__logo {
         height: 100px;
         width: auto;
-        background-color: $white;
-        box-shadow: $shadow-top;
 
         @media screen and (max-width: #{$phone}) {
             height: 75px;
