@@ -20,10 +20,10 @@
 <!DOCTYPE HTML>
 <html lang="fr">
     <head>
-        <?php require 'includes/head.inc.php'; ?>        
+        <?php require 'includes/head-inc.php'; ?>        
     </head>
     <body>    
-        <?php require 'includes/layouts/header.inc.php'; ?>
+        <?php require 'includes/layouts/header-inc.php'; ?>
         <main>
             <div class="container">
                 <?php if ($_GET['table'] == 'users') { ?>
@@ -58,6 +58,6 @@
                 <?php } ?>
             </div>
         </main>
-        <?php require 'includes/layouts/footer.inc.php'; ?>
+        <?php require 'includes/layouts/footer-inc.php'; ?>
     </body>
 </html>

@@ -14,10 +14,10 @@
 <!DOCTYPE HTML>
 <html lang="fr">
     <head>
-        <?php require 'includes/head.inc.php'; ?>        
+        <?php require 'includes/head-inc.php'; ?>        
     </head>
     <body>    
-        <?php require 'includes/layouts/header.inc.php'; ?>
-        <?php require 'includes/layouts/footer.inc.php'; ?>
+        <?php require 'includes/layouts/header-inc.php'; ?>
+        <?php require 'includes/layouts/footer-inc.php'; ?>
     </body>
 </html>
