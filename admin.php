@@ -3,7 +3,7 @@
     $description = "Administration de la boutique en ligne My Shop";
     $currentPage = 'admin';
     require_once 'core/admin/DBAdministrator.php';
-    $dbAdmin = new DBAdministrator('localhost', 'root', 'root', 3306, 'my_shop');
+    $dbAdmin = new DBAdministrator();
     $dbAdmin->connect();
 ?>
 
@@ -45,8 +45,8 @@
                             echo '<td></td>';
                         }
                         echo '<td>
-                            <button class="btn btn-success">Modifier</button>
-                            <button class="btn btn-danger">Supprimer</button>
+                            <a href="edit.php?id=' . $user['id'] . '" class="btn btn-success">Modifier</a>
+                            <a href="delete.php?id=' . $user['id'] . '&table=users" class="btn btn-danger">Supprimer</a>
                         </td>';
                         echo '</tr>' ;
                     }
@@ -59,7 +59,10 @@
 
         <div class="container">
             <a href="admin.php" class="btn btn-secondary mb-2">Retour au choix de la table</a>
-            <h3 class="my-2">Produits</h3>
+            <div class="d-flex justify-content-between align-items-end">
+                <h3 class="my-2">Produits</h3>
+                <a href="admin.php" class="btn btn-primary mb-2">Ajouter un produit</a>
+            </div>
             <table class="table table-hover">
                 <thead>
                     <tr>
@@ -79,8 +82,8 @@
                         echo '<td>' . $product['price'] . '</td>' ;
                         echo '<td>' . $product['category_id'] . '</td>' ;
                         echo '<td>
-                            <button class="btn btn-success">Modifier</button>
-                            <button class="btn btn-danger">Supprimer</button>
+                            <a href="edit.php?id=' . $product['id'] . '" class="btn btn-success">Modifier</a>
+                            <a href="delete.php?id=' . $product['id'] . '&table=products" class="btn btn-danger">Supprimer</a>
                             </td>';
                         echo '</tr>' ;
                     }

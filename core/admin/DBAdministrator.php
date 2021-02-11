@@ -10,11 +10,11 @@ class DBAdministrator {
     private $currentUser = NULL;
     private $userConnected = false;
 
-    public function __construct($host, $dbuser, $dbpass, $dbport, $dbname) {
-        $this->dbUser = $dbuser;
-        $this->dbPassword = $dbpass;
-        $this->dsn = "mysql:host=$host;dbname=$dbname;port=$dbport";
-        $this->errorLogFile = $dbname . 'Errors.log';
+    public function __construct() {
+        $this->dbUser = 'root';
+        $this->dbPassword = 'root';
+        $this->dsn = "mysql:host=localhost;dbname=my_shop;port=3306;charset=UTF8";
+        $this->errorLogFile = 'myShopErrors.log';
     }
 
     public function connect() {
@@ -42,27 +42,35 @@ class DBAdministrator {
         return $req->fetchAll(PDO::FETCH_ASSOC);
     }
 
-    /*public function editUser() {}
+    public function editUser() {}
 
-    public function deluser($array) {
-        if($this->currentUser['role'] == 'ADM') {
-            if(count($array) !== 2) {
-                echo  "Bad params. Usage: deluser id\n";
+    public function deleteUser($id) {
+        try {
+            $exists = $this->dbConnection->prepare('SELECT * FROM users WHERE id = ?');
+            $exists->execute(array($id));
+            if($exists->fetch()) {
+                $req = $this->dbConnection->prepare('DELETE FROM users WHERE id = ?');
+                $req->execute(array($id));
+                $message = "L'utilisateur #" . $id . " a bien été supprimé.";
             } else {
-                $exists = $this->dbConnection->prepare('SELECT name FROM users WHERE id = ?');
-                $exists->execute(array($array[1]));
-                if($exists->fetch()) {
-                    $confirmation = readline("Are you sure ? [y/N]:");
-                    if (strtolower($confirmation) == 'y') {
-                        $req = $this->dbConnection->prepare('DELETE FROM users WHERE id = ?');
-                        $req->execute(array($array[1]));
-                    }
-                } else {
-                    echo "\t User #" . $array[1] . " unknown!\n";
-                }
+                $message = "L'utilisateur #" . $id . " n'existe pas.";
             }
-        } else {
-            echo "'" . $array[0] . "': Command unknown\n";
+            return $message;
         }
-    }*/
+        catch (Exception $e) {
+            echo $e->getMessage();
+        }
+    }
+
+    public function deleteProduct($id) {
+        $exists = $this->dbConnection->prepare('SELECT * FROM products WHERE id = ?');
+        $exists->execute(array($id));
+        if($exists->fetch()) {
+            $req = $this->dbConnection->prepare('DELETE FROM products WHERE id = ?');
+            $req->execute(array($id));
+            return "Le produit #" . $id . " a bien été supprimé.";
+        } else {
+            return "Le produit #" . $id . " n'existe pas.";
+        }
+    }
 }
