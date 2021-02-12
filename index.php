@@ -11,6 +11,8 @@
     </head>
     <body>    
         <?php require 'includes/layouts/header-inc.php'; ?>
+        <main>
+        </main>
         <?php require 'includes/layouts/footer-inc.php'; ?>
     </body>
 </html>

@@ -1,5 +1,5 @@
 <?php
-    $title = "Administration - My Shop";
+    $title = "Administrateur - My Shop";
     $description = "Administration de la boutique en ligne My Shop";
     $currentPage = 'admin';
     require_once 'core/admin/DBAdministrator.php';
@@ -14,6 +14,7 @@
     </head>
     <body>    
         <?php require 'includes/layouts/header-inc.php'; ?>
+        <main>
         <div class="container">
             <h2 class="my-4">Bonjour Administrateur</h2>
         </div>
@@ -45,7 +46,7 @@
                             echo '<td></td>';
                         }
                         echo '<td>
-                            <a href="edit.php?id=' . $user['id'] . '" class="btn btn-success">Modifier</a>
+                            <a href="edit-user.php?id=' . $user['id'] . '" class="btn btn-success">Modifier</a>
                             <a href="delete.php?id=' . $user['id'] . '&table=users" class="btn btn-danger">Supprimer</a>
                         </td>';
                         echo '</tr>' ;
@@ -61,7 +62,7 @@
             <a href="admin.php" class="btn btn-secondary mb-2">Retour au choix de la table</a>
             <div class="d-flex justify-content-between align-items-end">
                 <h3 class="my-2">Produits</h3>
-                <a href="admin.php" class="btn btn-primary mb-2">Ajouter un produit</a>
+                <a href="edit-product.php" class="btn btn-primary mb-2">Ajouter un produit</a>
             </div>
             <table class="table table-hover">
                 <thead>
@@ -82,7 +83,7 @@
                         echo '<td>' . $product['price'] . '</td>' ;
                         echo '<td>' . $product['category_id'] . '</td>' ;
                         echo '<td>
-                            <a href="edit.php?id=' . $product['id'] . '" class="btn btn-success">Modifier</a>
+                            <a href="edit-product.php?id=' . $product['id'] . '" class="btn btn-success">Modifier</a>
                             <a href="delete.php?id=' . $product['id'] . '&table=products" class="btn btn-danger">Supprimer</a>
                             </td>';
                         echo '</tr>' ;
@@ -105,7 +106,7 @@
             </form>
         </div>
         <?php } ?>
-
+        </main>
         <?php require 'includes/layouts/footer-inc.php'; ?>
     </body>
 </html>

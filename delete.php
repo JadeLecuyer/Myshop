@@ -1,5 +1,5 @@
 <?php
-    $title = "Administration - My Shop";
+    $title = "Administrateur - My Shop";
     $description = "Administration de la boutique en ligne My Shop";
     $currentPage = 'delete';
     require_once 'core/admin/DBAdministrator.php';
