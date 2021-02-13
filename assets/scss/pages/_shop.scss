@@ -1,0 +1,22 @@
+.card-product {
+    border: none;
+
+    a {
+        color: var(--bs-dark);
+        font-weight: bold;
+        text-decoration: none;
+        //text-transform: uppercase;
+    }
+
+    &__img {
+        height: 15rem;
+        border-radius: 0;
+        object-fit: cover;
+        object-position: 50% 50%;
+    }
+    
+    &__cart-logo{
+        height : 2rem;
+        width: auto;
+    }
+}

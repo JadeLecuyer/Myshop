@@ -1,6 +1,6 @@
 <?php
     $title = "Administrateur - My Shop";
-    $description = "Administration de la boutique en ligne My Shop";
+    $description = "Administration de la boutique en ligne My Shop - Supprimer un item";
     $currentPage = 'delete';
     require_once 'core/admin/DBAdministrator.php';
     $dbAdmin = new DBAdministrator();
@@ -10,9 +10,9 @@
         $id = $_GET['id'];
     }
 
-    if(isset($_POST['id']) && $_POST['table'] == 'users') {
+    if(isset($_POST['id']) && $_POST['table'] === 'users') {
         $result = $dbAdmin->deleteUser($_POST['id']);
-    } elseif (isset($_POST['id']) && $_POST['table'] == 'products') {
+    } elseif (isset($_POST['id']) && $_POST['table'] === 'products') {
         $result = $dbAdmin->deleteProduct($_POST['id']);
     }
 ?>
@@ -48,10 +48,12 @@
                     </div>
                 </form>
 
-                <?php } elseif (isset($_POST['id']) && ($_POST['table'] == 'users' || $_POST['table'] == 'products')) {
+                <?php } elseif (isset($_POST['id']) && ($_POST['table'] === 'users' || $_POST['table'] === 'products')) {
                     if($result['status'] === 'success') {
                         echo '<div class="alert alert-success">' . $result['message'] . '</div>';
-                        echo '<div class="alert alert-primary">' . $result['imgMessage'] . '</div>';
+                        if ($_POST['table'] === 'products') {
+                            echo '<div class="alert alert-primary">' . $result['imgMessage'] . '</div>';
+                        }
                     } else {
                         echo '<div class="alert alert-danger">' . $result['message'] . '</div>';
                     }
@@ -59,7 +61,7 @@
                     <a href="admin.php?table=<?= $_POST['table'] ?>" class="btn btn-secondary">Retour à la table</a>
 
                 <?php } else { ?>
-                    <p>Paramètres incorrects !</p>
+                    <div class="alert alert-danger">Paramètres incorrects !</div>
                     <a href="admin.php" class="btn btn-secondary">Retour au choix de la table</a>
                 <?php } ?>
             </div>

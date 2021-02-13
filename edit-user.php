@@ -1,7 +1,7 @@
 <?php
     $title = "Administrateur - My Shop";
-    $description = "Administration de la boutique en ligne My Shop";
-    $currentPage = 'edit-product';
+    $description = "Administration de la boutique en ligne My Shop - Modifier un utilisateur";
+    $currentPage = 'edit-user';
     require_once 'core/admin/DBAdministrator.php';
     $dbAdmin = new DBAdministrator();
     $dbAdmin->connect();
