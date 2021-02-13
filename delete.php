@@ -11,9 +11,9 @@
     }
 
     if(isset($_POST['id']) && $_POST['table'] == 'users') {
-        $message = $dbAdmin->deleteUser($_POST['id']);
+        $result = $dbAdmin->deleteUser($_POST['id']);
     } elseif (isset($_POST['id']) && $_POST['table'] == 'products') {
-        $message = $dbAdmin->deleteProduct($_POST['id']);
+        $result = $dbAdmin->deleteProduct($_POST['id']);
     }
 ?>
 
@@ -48,8 +48,13 @@
                     </div>
                 </form>
 
-                <?php } elseif (isset($_POST['id']) && ($_POST['table'] == 'users' || $_POST['table'] == 'products')) { ?>
-                    <p><?= $message; ?></p>
+                <?php } elseif (isset($_POST['id']) && ($_POST['table'] == 'users' || $_POST['table'] == 'products')) {
+                    if($result['status'] === 'success') {
+                        echo '<div class="alert alert-success">' . $result['message'] . '</div>';
+                    } else {
+                        echo '<div class="alert alert-danger">' . $result['message'] . '</div>';
+                    }
+                ?>
                     <a href="admin.php?table=<?= $_POST['table'] ?>" class="btn btn-secondary">Retour à la table</a>
 
                 <?php } else { ?>

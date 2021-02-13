@@ -34,7 +34,20 @@
                     </tr>
                 </thead>
                 <tbody>
-                <?php $users = $dbAdmin->getUsers();
+                <?php 
+                    $usersPerPage = 20;
+                    $numberOfUsers = $dbAdmin->getCountUsers();
+                    $numberOfPages = $numberOfUsers / $usersPerPage;
+                    if(!is_int($numberOfPages)) {
+                        $numberOfPages = floor($numberOfPages) + 1;
+                    }
+                    if(isset($_GET['page'])) {
+                        $offset = ($_GET['page'] - 1) * $usersPerPage;
+                    } else {
+                        $offset = 0;
+                    }
+                    
+                    $users = $dbAdmin->getUsers($usersPerPage, $offset);
                     foreach($users as $user) {
                         echo '<tr>';
                         echo '<td>' . $user['id'] . '</td>';
@@ -54,6 +67,17 @@
                 ?>
                 </tbody>
             </table>
+            <nav aria-label="Page navigation table users">
+                <ul class="pagination flex-wrap">
+                    <?php for($i = 1; $i <= $numberOfPages; $i++) {
+                        echo '<li class="page-item';
+                        if ($_GET['page'] == $i || (!isset($_GET['page']) && $i == 1)) {
+                            echo ' active';
+                        }
+                        echo'"><a class="page-link" href="admin.php?table=users&page=' . $i. '">' . $i . '</a></li>';
+                    }?>
+                </ul>
+            </nav>
         </div>
 
         <?php } elseif($_GET['table'] == 'products') { ?>
@@ -70,18 +94,28 @@
                         <th scope="col">ID</th>
                         <th scope="col">Nom</th>
                         <th scope="col">Prix</th>
-                        <th scope="col">Catégorie</th>
                         <th scope="col">Action</th>
                     </tr>
                 </thead>
                 <tbody>
-                <?php $products = $dbAdmin->getProducts();
+                <?php $productsPerPage = 20;
+                    $numberOfProducts = $dbAdmin->getCountProducts();
+                    $numberOfPages = $numberOfProducts / $productsPerPage;
+                    if(!is_int($numberOfPages)) {
+                        $numberOfPages = floor($numberOfPages) + 1;
+                    }
+                    if(isset($_GET['page'])) {
+                        $offset = ($_GET['page'] - 1) * $productsPerPage;
+                    } else {
+                        $offset = 0;
+                    }
+
+                    $products = $dbAdmin->getProducts($productsPerPage, $offset);
                     foreach($products as $product) {
                         echo '<tr>';
                         echo '<td>' . $product['id'] . '</td>';
                         echo '<td>' . $product['name'] . '</td>' ;
                         echo '<td>' . $product['price'] . '</td>' ;
-                        echo '<td>' . $product['category_id'] . '</td>' ;
                         echo '<td>
                             <a href="edit-product.php?id=' . $product['id'] . '" class="btn btn-success">Modifier</a>
                             <a href="delete.php?id=' . $product['id'] . '&table=products" class="btn btn-danger">Supprimer</a>
@@ -91,6 +125,17 @@
                 ?>
                 </tbody>
             </table>
+            <nav aria-label="Page navigation table users">
+                <ul class="pagination flex-wrap">
+                    <?php for($i = 1; $i <= $numberOfPages; $i++) {
+                        echo '<li class="page-item';
+                        if ($_GET['page'] == $i || (!isset($_GET['page']) && $i == 1)) {
+                            echo ' active';
+                        }
+                        echo '"><a class="page-link" href="admin.php?table=products&page=' . $i. '">' . $i . '</a></li>';
+                    }?>
+                </ul>
+            </nav>
         </div>
 
 

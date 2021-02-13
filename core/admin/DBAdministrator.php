@@ -1,4 +1,5 @@
 <?php
+require 'DBconfig.php';
 
 class DBAdministrator {
     private $dbUser;
@@ -13,9 +14,9 @@ class DBAdministrator {
     private static $firstConnexion = 0;
 
     public function __construct() {
-        $this->dbUser = 'root';
-        $this->dbPassword = 'root';
-        $this->dsn = "mysql:host=localhost;dbname=my_shop;port=3306;charset=UTF8";
+        $this->dbUser = DB_USER;
+        $this->dbPassword = DB_PASSWORD;
+        $this->dsn = 'mysql:host=' . DB_HOST . ';dbname=' . DB_NAME . ';port=' . DB_PORT . ';charset=UTF8';
         $this->errorLogFile = 'myShopErrors.log';
     }
 
@@ -31,7 +32,7 @@ class DBAdministrator {
         } 
         catch (PDOException $e) {
             error_log($e->getMessage() . "\n", 3, $this->errorLogFile);
-            echo 'PDO ERROR: ' . $e->getMessage() . ', storage in ' . $this->errorLogFile . "\n";
+            echo 'PDO ERROR: more info in ' . $this->errorLogFile . "\n";
         }
         return $this;
     }
@@ -53,17 +54,31 @@ class DBAdministrator {
         }
     }
 
-    public function getUsers() {
-        $req = $this->dbConnection->prepare('SELECT * FROM users ORDER BY id');
+    public function getUsers($count = 10, $start = 0) {
+        $req = $this->dbConnection->prepare('SELECT * FROM users ORDER BY id LIMIT ' . $count . ' OFFSET ' . $start);
         $req->execute();
         return $req->fetchAll(PDO::FETCH_ASSOC);
     }
 
-    public function getProducts() {
-        $req = $this->dbConnection->prepare('SELECT * FROM products ORDER BY id');
+    public function getCountUsers() {
+        $req = $this->dbConnection->prepare('SELECT COUNT(*) FROM users');
+        $req->execute();
+        $number = $req->fetch(PDO::FETCH_NUM);
+        return intval($number[0]);
+    } 
+
+    public function getProducts($count = 10, $start = 0) {
+        $req = $this->dbConnection->prepare('SELECT * FROM products ORDER BY id LIMIT ' . $count . ' OFFSET ' . $start);
         $req->execute();
         return $req->fetchAll(PDO::FETCH_ASSOC);
     }
+
+    public function getCountProducts() {
+        $req = $this->dbConnection->prepare('SELECT COUNT(*) FROM products');
+        $req->execute();
+        $number = $req->fetch(PDO::FETCH_NUM);
+        return intval($number[0]);
+    } 
 
     public function getUser($id) {
         $req = $this->dbConnection->prepare('SELECT * FROM users WHERE id = ?');
@@ -84,7 +99,15 @@ class DBAdministrator {
             return false;
         }
     }
-
+    
+    /**
+     * editUser
+     * edits email and/or administrator privileges for an user
+     * @param  string $id
+     * @param  string $email
+     * @param  string $admin
+     * @return mixed success message or failure messages
+     */
     public function editUser($id, $email, $admin) {
         // sanitize id and verify the user exists
         $id = filter_var($id, FILTER_SANITIZE_NUMBER_INT);
@@ -99,30 +122,49 @@ class DBAdministrator {
             $errorMessage[] = 'La valeur du champ administrateur n\'est pas valable.';
         }
 
-        // verify the email is an email
+        // verify the email is an email, is not too long to be stocked and it is not already used
         $email = filter_var($email, FILTER_SANITIZE_EMAIL);
         if($email === false) {
             $errorMessage[] = 'Le nom n\'est pas valable.';
         } elseif(filter_var($email, FILTER_VALIDATE_EMAIL) === false) {
             $errorMessage[] = 'L\'email n\'est pas valable.';
+        } elseif(strlen($email) > 50) {
+            $errorMessage[] = 'L\'email est trop long.';
+        } else {
+            $exists = $this->dbConnection->prepare('SELECT * FROM users WHERE email = :email AND id != :id');
+            $exists->execute(array('email' => $email, 'id' => $id));
+            if($exists->fetch()) {
+                $errorMessage[] = 'Cet email est déjà relié à un autre compte';
+            }
         }
 
         // if there are no errors add modifs to database
         if(count($errorMessage) === 0) {
             $req = $this->dbConnection->prepare('UPDATE users SET email = :email, admin = :admin WHERE id = :id');
             try {
-                $req->execute(array('email' =>$email, 'admin' => $admin, 'id' => $id));
+                $req->execute(array('email' => $email, 'admin' => $admin, 'id' => $id));
                 return "success";
             }
             catch (Exception $e) {
                 error_log($e->getMessage() . "\n", 3, $this->errorLogFile);
-                echo 'ERROR: ' . $e->getMessage() . ' storage in ' . $this->errorLogFile . "\n";
+                echo 'ERROR: more info in' . $this->errorLogFile . "\n";
             }
         } else {
             return $errorMessage;
         }
     }
-
+    
+    /**
+     * verifyProductInput
+     *  sanitizes and verifies input for new product or input updates for existing one
+     * 
+     * @param  mixed $id
+     * @param  string $name
+     * @param  string $description
+     * @param  string $price
+     * @param  array $img
+     * @return mixed
+     */
     public function verifyProductInput($id, $name, $description, $price, $img) {
         // if id given (product modification) sanitize id and verify the user exists
         if(!is_null($id)) {
@@ -138,6 +180,8 @@ class DBAdministrator {
         $name = filter_var($name, FILTER_SANITIZE_STRING);
         if($name === false) {
             $errorMessage[] = 'Le nom n\'est pas valable.';
+        } elseif(strlen($name) > 255) {
+            $errorMessage[] = 'Le nom est trop long.';
         }
 
         //sanitize description
@@ -147,33 +191,48 @@ class DBAdministrator {
         }
 
         // verify price is a number and positive
-        if(!is_numeric($price) && $price <= 0) {
+        $price = floatval(filter_var($price, FILTER_SANITIZE_NUMBER_FLOAT, FILTER_FLAG_ALLOW_FRACTION));
+        if($price === false || (!is_numeric($price) && $price <= 0)) {
             $errorMessage[] = 'Le prix n\'est pas valable';
         }
 
-        // if id given checks if the image was
-        
-        // verify image file type and size is valid and transfers it if ok
-        $allowedTypes = [IMAGETYPE_JPEG, IMAGETYPE_GIF, IMAGETYPE_PNG];
-        $imgType = exif_imagetype($img['tmp_name']);
-        $maxImgSize = 100 * 1024;
-        if(in_array($imgType, $allowedTypes)) {
-            if($img['size'] < $maxImgSize) {
-                $destFolder = '/assets/img/products/';
-                $destFile = date('d.m.y.H.i.s');
-                while (file_exists($destFolder . $destFile)) {
-                    $destFile = rand() . $destFile;
-                }
-                if (move_uploaded_file($img['tmp_name'], $destFolder . $destFile)){
-                    $productImg = $destFolder . $destFile;
+        // if id given, checks if the image was changed
+        if (!is_null($id) && empty($img['name'])) {
+            $productImg = 'unchanged';
+        } else {
+        // verify image file type and size are valid and transfer it if ok
+            $allowedTypes = [IMAGETYPE_JPEG, IMAGETYPE_GIF, IMAGETYPE_PNG];
+            $imgType = exif_imagetype($img['tmp_name']);
+            $maxImgSize = 300 * 1024;
+            if(in_array($imgType, $allowedTypes)) {
+                if($img['size'] < $maxImgSize) {
+                    switch($imgType) {
+                        case IMAGETYPE_GIF :
+                            $ext = '.gif';
+                            break;
+                        case IMAGETYPE_JPEG :
+                            $ext = '.jpeg';
+                            break;
+                        case IMAGETYPE_PNG :
+                            $ext = '.png';
+                            break;
+                    }
+                    $destFolder = 'products/img/';
+                    $destFile = date('d-m-y-H-i-s') . $ext;
+                    while (file_exists($destFolder . $destFile)) {
+                        $destFile = rand() . $destFile;
+                    }
+                    if (move_uploaded_file($img['tmp_name'], $destFolder . $destFile)){
+                        $productImg = $destFolder . $destFile;
+                    } else {
+                        $errorMessage[] = 'Erreur lors du transfert du fichier';
+                    }
                 } else {
-                    $errorMessage[] = 'Erreur lors du transfert du fichier';
+                    $errorMessage[] = 'L\'image est trop lourde.';
                 }
             } else {
-                $errorMessage[] = 'L\'image est trop lourde.';
+                $errorMessage[] = 'Veuillez soumettre un fichier image de type jpeg, png ou gif.';
             }
-        } else {
-            $errorMessage[] = 'Veuillez soumettre un fichier image de type jpeg, png ou gif.';
         }
 
         if(count($errorMessage) === 0) {
@@ -184,15 +243,42 @@ class DBAdministrator {
             return ['status' =>'fail', 'message' => $errorMessage];
         }
     }
-
+    
+    /**
+     * deleteProductImg
+     * deletes the product image associated to the id from the stockage folder
+     * @param  string $id
+     * @return string success or failure message
+     */
+    public function deleteProductImg($id) {
+        $product = $this->getProduct($id);
+        if (unlink($product['img'])) {
+            return 'L\'ancienne image a été supprimée du dossier de stockage.';
+        } else {
+            return 'L\ancienne image n\'a pas pu être effacée du dossier de stockage.';
+        }
+    }
+    
+    /**
+     * editProduct
+     * edits an existing product's infos on database
+     * @param  string $id
+     * @param  string $name
+     * @param  string $description
+     * @param  string $price
+     * @param  array $img
+     * @return mixed
+     */
     public function editProduct($id, $name, $description, $price, $img) {
         // sanitize and verify input
         $resultVerif = $this->verifyProductInput($id, $name, $description, $price, $img);
 
         if (is_null($resultVerif)) {
-            return NULL; // returns null if the given id was not valid
-        } elseif($resultVerif['status'] === 'success') {
-        // if paramaters passed all the tests with no errors add the product modifs to DB
+            return 'wrongid'; // returns wrongid if the given id was not valid
+        } elseif($resultVerif['status'] === 'success' && $resultVerif['img'] !== 'unchanged') {
+        // if parameters passed all the tests with no errors and new img was uploaded add the product modifs to DB
+        // first delete the old image
+            $deleteOldImg = $this->deleteProductImg($resultVerif['id']);
             $req = $this->dbConnection->prepare('UPDATE products SET
                     name = :name, description = :description, price = :price, img = :img
                     WHERE id = :id');
@@ -202,22 +288,47 @@ class DBAdministrator {
                                                 'price' => $resultVerif['price'], 
                                                 'img' => $resultVerif['img'],
                                                 'id' => $resultVerif['id']));
-                return 'success';
+                return ['status' => 'success', 'message' => $deleteOldImg];
             }
             catch (Exception $e) {
                 error_log($e->getMessage() . "\n", 3, $this->errorLogFile);
-                echo 'ERROR: ' . $e->getMessage() . ' storage in ' . $this->errorLogFile . "\n";
+                echo 'ERROR: more info in ' . $this->errorLogFile . "\n";
             }
+        } elseif($resultVerif['status'] === 'success' && $resultVerif['img'] === 'unchanged') {
+            // if parameters passed all the tests with no errors add the product modifs to DB
+            $req = $this->dbConnection->prepare('UPDATE products SET
+                    name = :name, description = :description, price = :price
+                    WHERE id = :id');
+            try {
+                $addedProduct = $req->execute(array('name' =>$resultVerif['name'], 
+                                                'description' => $resultVerif['description'], 
+                                                'price' => $resultVerif['price'],
+                                                'id' => $resultVerif['id']));
+                return ['status' => 'success'];
+            }
+            catch (Exception $e) {
+                error_log($e->getMessage() . "\n", 3, $this->errorLogFile);
+                echo 'ERROR: more info in ' . $this->errorLogFile . "\n";
+            } 
         } else {
-            return $resultVerif['message'];
+            return ['status' => 'fail', 'errorMessage' => $resultVerif['message']];
         }
     }
-
+    
+    /**
+     * addProduct
+     * adds a new product to database
+     * @param  string $name
+     * @param  string $description
+     * @param  string $price
+     * @param  array $img
+     * @return mixed
+     */
     public function addProduct($name, $description, $price, $img) {
         // sanitize and verify input
         $resultVerif = $this->verifyProductInput(NULL, $name, $description, $price, $img);
 
-        // if paramaters passed all the tests with no errors add the product to DB
+        // if parameters passed all the tests with no errors add the product to DB
         if($resultVerif['status'] === 'success') {
             $req = $this->dbConnection->prepare('INSERT INTO products (name, description, price, img)
                     VALUES (:name, :description, :price, :img)');
@@ -230,7 +341,7 @@ class DBAdministrator {
             }
             catch (Exception $e) {
                 error_log($e->getMessage() . "\n", 3, $this->errorLogFile);
-                echo 'ERROR: ' . $e->getMessage() . ' storage in ' . $this->errorLogFile . "\n";
+                echo 'ERROR: more info in ' . $this->errorLogFile . "\n";
             }
         } else {
             return $resultVerif['message'];
@@ -248,14 +359,15 @@ class DBAdministrator {
             if($this->getUser($id) !== false) {
                 $req = $this->dbConnection->prepare('DELETE FROM users WHERE id = ?');
                 $req->execute(array($id));
-                $message = "L'utilisateur #" . $id . " a bien été supprimé.";
+                $result =  ['status' => 'success', 'message' => "L'utilisateur #" . $id . " a bien été supprimé."];
             } else {
-                $message = "L'utilisateur #" . $id . " n'existe pas.";
+                $result = ['status' => 'fail', 'message' => "L'utilisateur #" . $id . " n'existe pas."];
             }
-            return $message;
+            return $result;
         }
         catch (Exception $e) {
-            echo $e->getMessage();
+            error_log($e->getMessage() . "\n", 3, $this->errorLogFile);
+            echo 'ERROR: more info in ' . $this->errorLogFile . "\n";
         }
     }
     
@@ -270,13 +382,15 @@ class DBAdministrator {
             if($this->getProduct($id) !== false) {
                 $req = $this->dbConnection->prepare('DELETE FROM products WHERE id = ?');
                 $req->execute(array($id));
-                return "Le produit #" . $id . " a bien été supprimé.";
+                $result =  ['status' => 'success', 'message' => "Le produit #" . $id . " a bien été supprimé."];
             } else {
-                return "Le produit #" . $id . " n'existe pas.";
+                $result = ['status' => 'fail', 'message' => "Le produit #" . $id . " n'existe pas."];
             }
+            return $result;
         }
         catch (Exception $e) {
-            echo $e->getMessage();
+            error_log($e->getMessage() . "\n", 3, $this->errorLogFile);
+            echo 'ERROR: more info in ' . $this->errorLogFile . "\n";
         }
     }
 }

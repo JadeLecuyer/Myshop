@@ -5,21 +5,37 @@
     require_once 'core/admin/DBAdministrator.php';
     $dbAdmin = new DBAdministrator();
     $dbAdmin->connect();
+    $isEdit = !empty($_POST['id']);
 
     if(isset($_GET['id'])) {
         $product = $dbAdmin->getProduct($_GET['id']);
     }
 
-    var_dump($_FILES, $_POST);
+    $emptyInput = [];
+    if (!empty($_POST)) {
+        if(empty($_POST['name'])) {
+            $emptyInput[] = 'Renseignez un nom.';
+        }
+        if(empty($_POST['description'])) {
+            $emptyInput[] = 'Renseignez une description.';
+        }
+        if(empty($_POST['price'])) {
+            $emptyInput[] = 'Renseignez un prix.';
+        }
+        if(empty($_FILES['img']['name']) && !$isEdit) {
+            $emptyInput[] = 'Choisissez une photo.';
+        }
 
-    if(isset($_POST['id']) && isset($_POST['name']) && isset($_POST['description'])
-    && isset($_POST['price']) && isset($_FILES['img'])) {
-        $editedProduct = $dbAdmin->editProduct($_POST['id'], $_POST['name'], $_POST['description'], $_POST['price'], $_POST['img']);
-    } elseif(!isset($_POST['id']) && isset($_POST['name']) && isset($_POST['description'])
-    && isset($_POST['price']) && isset($_POST['img'])) {
-        $addedProduct = $dbAdmin->addProduct($_POST['name'], $_POST['description'], $_POST['price'], $_FILES['img']);
+        if (count($emptyInput) === 0) {
+            if($isEdit === true) {
+                $editedProduct = $dbAdmin->editProduct($_POST['id'], $_POST['name'], $_POST['description'], $_POST['price'], $_FILES['img']);
+            } else {
+                $addedProduct = $dbAdmin->addProduct($_POST['name'], $_POST['description'], $_POST['price'], $_FILES['img']);
+            }
+        }
     }
 
+    
 ?>
 
 <!DOCTYPE HTML>
@@ -32,20 +48,24 @@
         <main>
         <div class="container">
             <a href="admin.php?table=products" class="btn btn-secondary my-3">Revenir à la table produits</a>
-            <?php if (isset($editedProduct) && ($editedProduct == 'success')) {
+            <?php if (isset($editedProduct) && ($editedProduct['status'] === 'success')) {
                 echo '<div class="alert alert-success">Ce produit a été modifié avec succès.</div>';
-            } elseif (isset($addedProduct) && ($addedProduct == 'success')) {
+                if(isset($editedProduct['message'])) {
+                    echo '<div class="alert alert-primary">' . $editedProduct['message'] . '</div>';
+                }
+            } elseif (isset($addedProduct) && ($addedProduct === 'success')) {
                 echo '<div class="alert alert-success">Ce produit a été créé avec succès.</div>';
             } else {
                 if ($editedProduct === 'wrongid' || $product === false) {
                 echo '<div class="alert alert-danger">Ce produit n\'existe pas. Veuillez spécifier un identifiant valide.</div>';
                 } else {
-                    if (isset($editedProduct) && $editedProduct != 'success') {
-                        echo '<div class="alert alert-danger">' . implode("<br>", $editedProduct) . '</div>';
+                    if (isset($editedProduct) && $editedProduct['status'] !== 'success') {
+                        echo '<div class="alert alert-danger">' . implode("<br>", $editedProduct['errorMessage']) . '</div>';
                         $product = $dbAdmin->getProduct($_POST['id']);
-                    } elseif (isset($addedProduct) && $addedProduct != 'success') {
+                    } elseif (isset($addedProduct) && $addedProduct !== 'success') {
                         echo '<div class="alert alert-danger">' . implode("<br>", $addedProduct) . '</div>';
-                        $product = $_POST;
+                    } elseif (count($emptyInput) !== 0) {
+                        echo '<div class="alert alert-danger">' . implode("<br>", $emptyInput) . '</div>';
                     } ?>
 
             <form action="edit-product.php" method="POST" enctype="multipart/form-data">
@@ -54,24 +74,24 @@
 
                 <div class="my-3">
                     <label for="name" class="form-label">Nom du produit</label>
-                    <input type="text" name="name" id="name" class="form-control" value="<?= $product ? $product['name'] : '' ?>">
+                    <input type="text" name="name" id="name" class="form-control" value="<?= $product ? $product['name'] : '' ?>" required>
                 </div>
 
                 <div class="my-3">
                     <label for="description" class="form-label">Description du produit</label>
-                    <textarea name="description" id="description" class="form-control" value="<?= $product ? $product['description'] : '' ?>"></textarea>
+                    <textarea name="description" id="description" class="form-control" required><?= $product ? $product['description'] : '' ?></textarea>
                 </div>
 
                 <div class="my-3">
                     <label for="description" class="form-label">Prix du produit</label>
-                    <input type="number" name="price" id="price" class="form-control w-auto" value="<?= $product ? $product['price'] : '' ?>">
+                    <input type="number" name="price" id="price" class="form-control w-auto" value="<?= $product ? $product['price'] : '' ?>" required>
                 </div>
 
                 <div class="my-3">
                     <?php if($product && !is_null($product['img'])) { echo '<img src="' . $product['img'] . '" alt="Photo du produit" class="d-block img-fluid">';} ?>
                     <label for="img" class="form-label">Photo du produit</label>
                     <input type="file" name="img" id="img" accept="image/png, image/gif, image/jpeg" class="form-control">
-                    <div class="form-text">L'image doit être de type JPEG, PNG ou GIF et faire moins de .</div>
+                    <div class="form-text">L'image doit être de type JPEG, PNG ou GIF et faire moins de 300ko.</div>
                 </div>
 
                 <button type="submit" class="btn btn-primary my-3">Confirmer</button>
