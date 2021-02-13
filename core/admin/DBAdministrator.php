@@ -255,7 +255,7 @@ class DBAdministrator {
         if (unlink($product['img'])) {
             return 'L\'ancienne image a été supprimée du dossier de stockage.';
         } else {
-            return 'L\ancienne image n\'a pas pu être effacée du dossier de stockage.';
+            return 'L\'ancienne image n\'a pas pu être effacée du dossier de stockage.';
         }
     }
     
@@ -380,9 +380,10 @@ class DBAdministrator {
     public function deleteProduct($id) {
         try {
             if($this->getProduct($id) !== false) {
+                $deleteImg = $this->deleteProductImg($id);
                 $req = $this->dbConnection->prepare('DELETE FROM products WHERE id = ?');
                 $req->execute(array($id));
-                $result =  ['status' => 'success', 'message' => "Le produit #" . $id . " a bien été supprimé."];
+                $result =  ['status' => 'success', 'message' => "Le produit #" . $id . " a bien été supprimé.", 'imgMessage' => $deleteImg];
             } else {
                 $result = ['status' => 'fail', 'message' => "Le produit #" . $id . " n'existe pas."];
             }

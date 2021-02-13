@@ -51,6 +51,7 @@
                 <?php } elseif (isset($_POST['id']) && ($_POST['table'] == 'users' || $_POST['table'] == 'products')) {
                     if($result['status'] === 'success') {
                         echo '<div class="alert alert-success">' . $result['message'] . '</div>';
+                        echo '<div class="alert alert-primary">' . $result['imgMessage'] . '</div>';
                     } else {
                         echo '<div class="alert alert-danger">' . $result['message'] . '</div>';
                     }
