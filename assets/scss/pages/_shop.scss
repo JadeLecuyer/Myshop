@@ -1,0 +1,54 @@
+.card-product {
+    border: none;
+
+    a {
+        color: var(--bs-dark);
+        font-weight: bold;
+        text-decoration: none;
+        //text-transform: uppercase;
+        transition: all 300ms ease-out;
+
+        &:hover {
+            color: $color-primary;
+        }
+    }
+
+    &__title {
+        width: 100%;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+        overflow: hidden;
+    }
+
+    &__wrapper-img {
+        position: relative;
+        width: 100%;
+        overflow: hidden;
+
+        &::after {
+            content: "";
+            display: block;
+            padding-bottom: 100%;
+        }
+    }
+
+    &__img {
+        position: absolute;
+        width: 100%;
+        height: 100%;
+        border-radius: 0;
+        object-fit: cover;
+        object-position: 50% 50%;
+        transition: transform 500ms ease-out;
+
+        &:hover {
+            transform: scale(1.1);
+        }
+    }
+    
+    &__cart-logo{
+        height : 2rem;
+        width: auto;
+        margin-bottom: 1.2rem;
+    }
+}

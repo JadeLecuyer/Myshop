@@ -1,6 +1,6 @@
 <?php
     $title = "Administrateur - My Shop";
-    $description = "Administration de la boutique en ligne My Shop";
+    $description = "Administration de la boutique en ligne My Shop - Modifier ou ajouter un produit";
     $currentPage = 'edit-product';
     require_once 'core/admin/DBAdministrator.php';
     $dbAdmin = new DBAdministrator();

@@ -5,6 +5,9 @@
     require_once 'core/admin/DBAdministrator.php';
     $dbAdmin = new DBAdministrator();
     $dbAdmin->connect();
+    if(isset($_GET['page']) && $_GET['page'] < 1) {
+        $_GET['page'] = 1;
+    }
 ?>
 
 <!DOCTYPE HTML>

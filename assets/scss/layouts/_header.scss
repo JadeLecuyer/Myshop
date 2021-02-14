@@ -27,6 +27,7 @@
     &__nav-link {
         color: var(--bs-dark);
         border-bottom: 1px solid $white;
+        transition: all 500ms ease-out;
 
         &:hover, &.active {
             color: var(--bs-dark);
@@ -53,6 +54,7 @@
     &__cart-logo {
         height: 30px;
         width: auto;
+        transition: all 500ms ease-out;
 
         &:hover {
             fill:$color-primary;

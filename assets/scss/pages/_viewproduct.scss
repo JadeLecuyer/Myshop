@@ -1,0 +1,27 @@
+.block-product {
+
+    &__img {
+        display: block;
+        margin: auto;
+        max-width: 100%;
+    }
+
+}
+
+.btn-custom {
+    background-color: $color-primary;
+    color: $white;
+    padding: 0.7rem 1.2rem;
+    transition: all 300ms ease-out;
+
+    &__logo {
+        height: 1.5rem;
+        width: auto;
+        margin-right: 0.5rem;
+    }
+
+    &:hover {
+        background-color: var(--bs-dark);
+        color: $white;
+    }
+}
