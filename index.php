@@ -5,6 +5,9 @@
     require_once 'core/Database.php';
     $db = new Database();
     $db->connect();
+    if(isset($_GET['page']) && $_GET['page'] < 1) {
+        $_GET['page'] = 1;
+    }
 ?>
 
 <!DOCTYPE HTML>
@@ -16,7 +19,7 @@
         <?php require 'includes/layouts/header-inc.php'; ?>
         <main>
             <div class="container">
-                <div class="row row-cols-1 row-cols-md-3 row-cols-lg-4 row-cols-xxl-6">
+                <div class="row row-cols-1 row-cols-md-3 row-cols-lg-4 row-cols-xxl-4">
                     <?php $productsPerPage = 12;
                         $numberOfProducts = $db->getCountProducts();
                         $numberOfPages = $numberOfProducts / $productsPerPage;
@@ -31,7 +34,7 @@
     
                         $products = $db->getProducts($productsPerPage, $offset);
                         foreach($products as $product) {
-                            include 'includes/productCard-inc.php';
+                            include 'includes/product-card-inc.php';
                         } ?>
                 </div>
                 <nav aria-label="Navigation des pages produits">

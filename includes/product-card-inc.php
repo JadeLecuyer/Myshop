@@ -1,10 +1,12 @@
 <div class="col g-4">
     <div class="card card-product">
-        <a href="#"><img src="<?= $product['img'] ?>" alt="<?= $product['name'] ?>" class="card-img-top card-product__img"></a>
-        <div class="card-body">
-            <div class="d-flex justify-content-between">
-                <a href="#" class="card-title"><?= $product['name'] ?></a>
-                <!-- <h6 class="card-subtitle text-muted text-uppercase small-text">Lounge</h6> -->
+        <div class="card-product__wrapper-img">
+            <a href="viewproduct.php?id=<?= $product['id'] ?>"><img src="<?= $product['img'] ?>" alt="<?= $product['name'] ?>" class="card-img-top card-product__img"></a>
+        </div>
+        <div class="card-body d-flex flex-column justify-content-between">
+            <div class="card-product__title mb-1">
+                <a href="viewproduct.php?id=<?= $product['id'] ?>" class="card-title"><?= $product['name'] ?></a>
+                <!-- <h6 class="card-subtitle text-muted text-uppercase small-text">Catégorie</h6> -->
             </div>
             <div class="d-flex justify-content-between align-items-end">
                 <p class="card-text"><?= $product['price'] ?>€</p>

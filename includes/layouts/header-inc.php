@@ -1,4 +1,4 @@
-<header class="header mb-4">
+<header class="header mb-5">
     <div class="header__band d-none d-md-block">
     </div>
 
