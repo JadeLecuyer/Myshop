@@ -67,10 +67,11 @@ class DBAdministrator extends Database {
      * @param  string $description
      * @param  string $price
      * @param  array $img
+     * @param  string $category_id
      * @return mixed
      */
-    public function verifyProductInput($id, $name, $description, $price, $img) {
-        // if id given (product modification) sanitize id and verify the user exists
+    public function verifyProductInput($id, $name, $description, $price, $img, $category_id) {
+        // if id given (product modification) sanitize id and verify the product exists
         if(!is_null($id)) {
             $id = filter_var($id, FILTER_SANITIZE_NUMBER_INT);
             if($id === false) {
@@ -80,7 +81,7 @@ class DBAdministrator extends Database {
             }
         }
         
-        // sanitize name
+        // sanitize name and check length
         $name = filter_var($name, FILTER_SANITIZE_STRING);
         if($name === false) {
             $errorMessage[] = 'Le nom n\'est pas valable.';
@@ -139,9 +140,17 @@ class DBAdministrator extends Database {
             }
         }
 
+        // sanitize parent id and check existence, if no parent id_parent is null
+        $category_id = filter_var($category_id, FILTER_SANITIZE_NUMBER_INT);
+        if($category_id === false) {
+            $errorMessage[] = 'La catégorie parente n\'est pas valable.';
+        } elseif(!$this->getCategory($category_id)) {
+            $errorMessage[] = 'La catégorie parente n\'existe pas.';
+        }
+
         if(count($errorMessage) === 0) {
             // if no errors return sanitized parameters
-            return ['status' => 'success', 'id' => $id, 'name' => $name, 'description' => $description, 'price' => $price, 'img' => $productImg];
+            return ['status' => 'success', 'id' => $id, 'name' => $name, 'description' => $description, 'price' => $price, 'img' => $productImg, 'category_id' => $category_id];
         } else {
             // if error return the error messages
             return ['status' =>'fail', 'message' => $errorMessage];
@@ -171,11 +180,12 @@ class DBAdministrator extends Database {
      * @param  string $description
      * @param  string $price
      * @param  array $img
+     * @param  string $category_id
      * @return mixed
      */
-    public function editProduct($id, $name, $description, $price, $img) {
+    public function editProduct($id, $name, $description, $price, $img, $category_id) {
         // sanitize and verify input
-        $resultVerif = $this->verifyProductInput($id, $name, $description, $price, $img);
+        $resultVerif = $this->verifyProductInput($id, $name, $description, $price, $img, $category_id);
 
         if (is_null($resultVerif)) {
             return 'wrongid'; // returns wrongid if the given id was not valid
@@ -184,13 +194,14 @@ class DBAdministrator extends Database {
         // first delete the old image
             $deleteOldImg = $this->deleteProductImg($resultVerif['id']);
             $req = $this->dbConnection->prepare('UPDATE products SET
-                    name = :name, description = :description, price = :price, img = :img
+                    name = :name, description = :description, price = :price, img = :img, category_id = :category_id
                     WHERE id = :id');
             try {
                 $addedProduct = $req->execute(array('name' =>$resultVerif['name'], 
                                                 'description' => $resultVerif['description'], 
                                                 'price' => $resultVerif['price'], 
                                                 'img' => $resultVerif['img'],
+                                                'category_id' => $resultVerif['category_id'],
                                                 'id' => $resultVerif['id']));
                 return ['status' => 'success', 'message' => $deleteOldImg];
             }
@@ -201,12 +212,13 @@ class DBAdministrator extends Database {
         } elseif($resultVerif['status'] === 'success' && $resultVerif['img'] === 'unchanged') {
             // if parameters passed all the tests with no errors add the product modifs to DB
             $req = $this->dbConnection->prepare('UPDATE products SET
-                    name = :name, description = :description, price = :price
+                    name = :name, description = :description, price = :price, category_id = :category_id
                     WHERE id = :id');
             try {
                 $addedProduct = $req->execute(array('name' =>$resultVerif['name'], 
                                                 'description' => $resultVerif['description'], 
                                                 'price' => $resultVerif['price'],
+                                                'category_id' => $resultVerif['category_id'],
                                                 'id' => $resultVerif['id']));
                 return ['status' => 'success'];
             }
@@ -226,20 +238,22 @@ class DBAdministrator extends Database {
      * @param  string $description
      * @param  string $price
      * @param  array $img
-     * @return mixed
+     * @param  string $category_id
+     * @return mixed success message or array of error message(s)
      */
-    public function addProduct($name, $description, $price, $img) {
+    public function addProduct($name, $description, $price, $img, $category_id) {
         // sanitize and verify input
-        $resultVerif = $this->verifyProductInput(NULL, $name, $description, $price, $img);
+        $resultVerif = $this->verifyProductInput(NULL, $name, $description, $price, $img, $category_id);
 
         // if parameters passed all the tests with no errors add the product to DB
         if($resultVerif['status'] === 'success') {
-            $req = $this->dbConnection->prepare('INSERT INTO products (name, description, price, img)
-                    VALUES (:name, :description, :price, :img)');
+            $req = $this->dbConnection->prepare('INSERT INTO products (name, description, price, img, category_id)
+                    VALUES (:name, :description, :price, :img, :category_id)');
             try {
                 $addedProduct = $req->execute(array('name' =>$resultVerif['name'], 
                                                 'description' => $resultVerif['description'], 
                                                 'price' => $resultVerif['price'], 
+                                                'category_id' => $resultVerif['category_id'], 
                                                 'img' => $resultVerif['img']));
                 return 'success';
             }
@@ -247,16 +261,133 @@ class DBAdministrator extends Database {
                 error_log($e->getMessage() . "\n", 3, $this->errorLogFile);
                 echo 'ERROR: more info in ' . $this->errorLogFile . "\n";
             }
-        } else {
+        } elseif ($resultVerif['status'] === 'fail') {
             return $resultVerif['message'];
         }
     }
     
     /**
+     * verifyCategoryInput
+     *
+     * @param  string $id
+     * @param  string $name
+     * @param  string $parent_id
+     * @return mixed null if wrong id, or array with status and error messages if failure, sanitized parameters if success
+     */
+    public function verifyCategoryInput($id, $name, $parent_id) {
+        // if id given (category modification) sanitize id and verify the category exists
+        if(!is_null($id)) {
+            $id = filter_var($id, FILTER_SANITIZE_NUMBER_INT);
+            if($id === false) {
+                return NULL;
+            } elseif(!$this->getCategory($id)) {
+                return NULL;
+            }
+        }
+
+        // sanitize name, check length and existence to avoid duplicates
+        $name = filter_var($name, FILTER_SANITIZE_STRING);
+        if($name === false) {
+            $errorMessage[] = 'Le nom n\'est pas valable.';
+        } elseif(strlen($name) > 255) {
+            $errorMessage[] = 'Le nom est trop long.';
+        } elseif(!is_null($id)) {
+            $exists = $this->dbConnection->prepare('SELECT * FROM categories WHERE name = :name AND id != :id');
+            $exists->execute(array('name' => $name, 'id' => $id));
+            if($exists->fetch()) {
+                $errorMessage[] = 'Une catégorie du même nom existe déjà.';
+            }
+        }
+
+        // sanitize parent id and check existence, if no parent id_parent is null
+        if($parent_id === 'NULL') {
+            $parent_id = NULL;
+        } else {
+            $parent_id = filter_var($parent_id, FILTER_SANITIZE_NUMBER_INT);
+            if($parent_id === false) {
+                $errorMessage[] = 'La catégorie parente n\'est pas valable.';
+            } elseif(!$this->getCategory($parent_id)) {
+                $errorMessage[] = 'La catégorie parente n\'existe pas.';
+            } elseif(!is_null($id) && $parent_id === $id) {
+                $errorMessage[] = 'Une catégorie ne peut pas être sa propre parente.';
+            }
+        }
+
+        if(count($errorMessage) === 0) {
+            // if no errors return sanitized parameters
+            return ['status' => 'success', 'id' => $id, 'name' => $name, 'parent_id' => $parent_id];
+        } else {
+            // if error return the error messages
+            return ['status' =>'fail', 'message' => $errorMessage];
+        }
+    }
+    
+    /**
+     * addCategory
+     *
+     * @param  string $name
+     * @param  string $parent_id
+     * @return mixed success message or array of error messages
+     */
+    public function addCategory($name, $parent_id) {
+                // sanitize and verify input
+                $resultVerif = $this->verifyCategoryInput(NULL, $name, $parent_id);
+
+                // if parameters passed all the tests with no errors add the category to DB
+                if($resultVerif['status'] === 'success') {
+                    $req = $this->dbConnection->prepare('INSERT INTO category (name, parent_id) VALUES (:name, :parent_id)');
+                    try {
+                        $addedCategory = $req->execute(array('name' =>$resultVerif['name'], 'parent_id' => $resultVerif['parent_id']));
+                        return 'success';
+                    }
+                    catch (Exception $e) {
+                        error_log($e->getMessage() . "\n", 3, $this->errorLogFile);
+                        echo 'ERROR: more info in ' . $this->errorLogFile . "\n";
+                    }
+                } elseif ($resultVerif['status'] === 'fail') {
+                    return $resultVerif['message'];
+                }
+    }
+    
+    /**
+     * editCategory
+     *
+     * @param  string $id
+     * @param  string $name
+     * @param  string $parent_id
+     * @return mixed wrong id message if invalid id, success message, or array of error messages
+     */
+    public function editCategory($id, $name, $parent_id) {
+        // sanitize and verify input
+        $resultVerif = $this->verifyCategoryInput($id, $name, $parent_id);
+
+        if (is_null($resultVerif)) {
+            return 'wrongid'; // returns wrongid if the given id was not valid
+        } elseif($resultVerif['status'] === 'success') {
+            // if parameters passed all the tests with no errors add the category modifs to DB
+            $req = $this->dbConnection->prepare(('UPDATE categories 
+                                        SET name = :name, parent_id = :parent_id WHERE id = :id'));
+            try {
+                $addedCategory = $req->execute(array('name' =>$resultVerif['name'], 
+                                                    'parent_id' => $resultVerif['parent_id'],
+                                                    'id' => $resultVerif['id']));
+                return 'success';
+            }
+            catch (Exception $e) {
+                error_log($e->getMessage() . "\n", 3, $this->errorLogFile);
+                echo 'ERROR: more info in ' . $this->errorLogFile . "\n";
+            }
+        } elseif ($resultVerif['status'] === 'fail') {
+            return $resultVerif['message'];
+        }
+    }
+
+
+    /**
      * deleteUser
      * delete an user if id exists
      * @param  string $id
-     * @return void
+     * @return array success or failure status and message
      */
     public function deleteUser($id) {
         try {
@@ -279,7 +410,7 @@ class DBAdministrator extends Database {
      * deleteProduct
      * delete a product if id exists
      * @param  string $id
-     * @return void
+     * @return array success or failure status and message
      */
     public function deleteProduct($id) {
         try {

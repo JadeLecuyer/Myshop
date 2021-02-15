@@ -25,12 +25,15 @@
         if(empty($_FILES['img']['name']) && !$isEdit) {
             $emptyInput[] = 'Choisissez une photo.';
         }
+        if(empty($_POST['category_id'])) {
+            $emptyInput[] = 'Choisissez une catégorie.';
+        }
 
         if (count($emptyInput) === 0) {
             if($isEdit === true) {
-                $editedProduct = $dbAdmin->editProduct($_POST['id'], $_POST['name'], $_POST['description'], $_POST['price'], $_FILES['img']);
+                $editedProduct = $dbAdmin->editProduct($_POST['id'], $_POST['name'], $_POST['description'], $_POST['price'], $_FILES['img'], $_POST['category_id']);
             } else {
-                $addedProduct = $dbAdmin->addProduct($_POST['name'], $_POST['description'], $_POST['price'], $_FILES['img']);
+                $addedProduct = $dbAdmin->addProduct($_POST['name'], $_POST['description'], $_POST['price'], $_FILES['img'], $_POST['category_id']);
             }
         }
     }
@@ -92,6 +95,23 @@
                     <label for="img" class="form-label">Photo du produit</label>
                     <input type="file" name="img" id="img" accept="image/png, image/gif, image/jpeg" class="form-control">
                     <div class="form-text">L'image doit être de type JPEG, PNG ou GIF et faire moins de 300ko.</div>
+                </div>
+
+                <div class="my-3">
+                    <label for="category_id" class="form-label">Catégorie parente de plus bas niveau</label>
+                    <select name="category_id" id="category_id" class="form-select">
+                        <?php 
+                        $numberOfCategories = $dbAdmin->getCountCategories();
+                        $categories = $dbAdmin->getCategories($numberOfCategories, 0);
+                        foreach($categories as $category) {
+                            echo '<option value="' . $category['id'] . '"';
+                            if ($category['id'] === $product['category_id']) {
+                                echo ' selected ';
+                            }
+                            echo '>' . $category['name'] . '</option>';
+                        }
+                        ?>
+                    </select>
                 </div>
 
                 <button type="submit" class="btn btn-primary my-3">Confirmer</button>

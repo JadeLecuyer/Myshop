@@ -65,7 +65,17 @@ class Database {
         $req->execute();
         $number = $req->fetch(PDO::FETCH_NUM);
         return intval($number[0]);
-    } 
+    }
+
+    public function getUser($id) {
+            $req = $this->dbConnection->prepare('SELECT * FROM users WHERE id = ?');
+            $req->execute(array($id));
+            if($result = $req->fetch(PDO::FETCH_ASSOC)) {
+                return $result;
+            } else {
+                return false;
+            }
+        }
 
     public function getProducts($count = 10, $start = 0) {
         $req = $this->dbConnection->prepare('SELECT * FROM products ORDER BY id LIMIT ' . $count . ' OFFSET ' . $start);
@@ -80,8 +90,8 @@ class Database {
             return intval($number[0]);
         }
 
-    public function getUser($id) {
-        $req = $this->dbConnection->prepare('SELECT * FROM users WHERE id = ?');
+    public function getProduct($id) {
+        $req = $this->dbConnection->prepare('SELECT * FROM products WHERE id = ?');
         $req->execute(array($id));
         if($result = $req->fetch(PDO::FETCH_ASSOC)) {
             return $result;
@@ -90,8 +100,21 @@ class Database {
         }
     }
 
-    public function getProduct($id) {
-        $req = $this->dbConnection->prepare('SELECT * FROM products WHERE id = ?');
+    public function getCategories($count = 10, $start = 0) {
+        $req = $this->dbConnection->prepare('SELECT * FROM categories ORDER BY id LIMIT ' . $count . ' OFFSET ' . $start);
+        $req->execute();
+        return $req->fetchAll(PDO::FETCH_ASSOC);
+    }
+
+    public function getCountCategories() {
+            $req = $this->dbConnection->prepare('SELECT COUNT(*) FROM categories');
+            $req->execute();
+            $number = $req->fetch(PDO::FETCH_NUM);
+            return intval($number[0]);
+        }
+
+    public function getCategory($id) {
+        $req = $this->dbConnection->prepare('SELECT * FROM categories WHERE id = ?');
         $req->execute(array($id));
         if($result = $req->fetch(PDO::FETCH_ASSOC)) {
             return $result;
