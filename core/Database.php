@@ -54,7 +54,7 @@ class Database {
         }
     }
 
-    public function getUsers($count = 10, $start = 0) {
+    public function getUsers($count = 20, $start = 0) {
         $req = $this->dbConnection->prepare('SELECT * FROM users ORDER BY id LIMIT ' . $count . ' OFFSET ' . $start);
         $req->execute();
         return $req->fetchAll(PDO::FETCH_ASSOC);
@@ -77,7 +77,7 @@ class Database {
             }
         }
 
-    public function getProducts($count = 10, $start = 0) {
+    public function getProducts($count = 12, $start = 0) {
         $req = $this->dbConnection->prepare('SELECT * FROM products ORDER BY id LIMIT ' . $count . ' OFFSET ' . $start);
         $req->execute();
         return $req->fetchAll(PDO::FETCH_ASSOC);
@@ -100,7 +100,7 @@ class Database {
         }
     }
 
-    public function getCategories($count = 10, $start = 0) {
+    public function getCategories($count = 20, $start = 0) {
         $req = $this->dbConnection->prepare('SELECT * FROM categories ORDER BY id LIMIT ' . $count . ' OFFSET ' . $start);
         $req->execute();
         return $req->fetchAll(PDO::FETCH_ASSOC);

@@ -3,8 +3,21 @@ require_once 'DBconfig.php';
 require_once 'core/Database.php';
 
 class Search extends Database {
-
-    public function buildQuery($searchCriteria, $categoryId, $max_price, $min_price) {
+    
+    /**
+     * buildQuery
+     * sanitize and verify search input
+     * build sql query with names placeholders
+     * build parameters array
+     *
+     * @param  string $searchCriteria
+     * @param  string $categoryId
+     * @param  string $max_price
+     * @param  string $min_price
+     * @param  string $sorting
+     * @return array success status with build sql query and parameters array or fail status with error messages
+     */
+    public function buildQuery($searchCriteria, $categoryId, $max_price, $min_price, $sorting) {
         if(!empty($max_price)) {
             $max_price = filter_var($max_price, FILTER_SANITIZE_NUMBER_INT);
             if ($max_price === false) {
@@ -122,6 +135,23 @@ class Search extends Database {
                 }
             }
 
+            if (!empty($sorting)) {
+                switch($sorting) {
+                    case 'price_asc' :
+                        $request .= ' ORDER BY price';
+                        break;
+                    case 'price_desc' :
+                        $request .= ' ORDER BY price DESC';
+                        break;
+                    case 'alphabet_asc' :
+                        $request .= ' ORDER BY name';
+                        break;
+                    case 'alphabet_desc' :
+                        $request .= ' ORDER BY name DESC';
+                        break;
+                }
+            }
+
             return ['status' => 'success', 'query' => $request, 'parameters' => $parameters];
 
         } else {
@@ -136,11 +166,12 @@ class Search extends Database {
      * @param  string $categoryId
      * @param  string $max_price
      * @param  string $min_price
+     * @param  string $sorting
      * @return array fail status with error messages array or success status with matched results array
      */
-    public function searchMatches($searchCriteria, $categoryId, $max_price, $min_price) {
+    public function searchMatches($searchCriteria, $categoryId, $max_price, $min_price, $sorting) {
         // verify and sanitize input, build the prepared query and the parameters array
-        $query = $this->buildQuery($searchCriteria, $categoryId, $max_price, $min_price); 
+        $query = $this->buildQuery($searchCriteria, $categoryId, $max_price, $min_price, $sorting); 
 
         if ($query['status'] === 'success') {
             try {

@@ -12,9 +12,9 @@
     if(empty($_GET)) {
         $emptyInput[] = 'Renseignez au moins un critère de recherche.';
     } else {
-        $results = $searchDb->searchMatches($_GET['criteria'], $_GET['category'], $_GET['max_price'], $_GET['min price']);
+        $results = $searchDb->searchMatches($_GET['criteria'], $_GET['category'], $_GET['max_price'], 
+        $_GET['min price'], $_GET['sorting']);
     }
-
 ?>
 
 <!DOCTYPE HTML>
@@ -31,17 +31,6 @@
                 <?php if($results['status'] === 'fail') {
                     echo '<div class="alert alert-danger">' . implode("<br>", $results['message']) . '</div>';
                 } elseif($results['status'] === 'success') { ?>
-                <div class="row row-cols-1 row-cols-md-3 row-cols-lg-4">
-                    <div class="col ms-auto">
-                        <select name="sorting" class="form-select block-search__pertinence">
-                            <option value="">Options de tri</option>
-                            <option value="price-asc">Prix croissant</option>
-                            <option value="price-desc">Prix décroissant</option>
-                            <option value="alphabet-asc">A -> Z</option>
-                            <option value="alphabet-desc">Z -> A</option>
-                        </select>
-                    </div>  
-                </div>
 
                 <div class="row row-cols-1 row-cols-md-3 row-cols-lg-4">
                     <?php $productsPerPage = 12;
@@ -56,11 +45,26 @@
                             $offset = 0;
                         }
 
-                        $displayedResults = array_slice($results['results'], $offset, $numberOfProducts);
+                        $displayedResults = array_slice($results['results'], $offset, $productsPerPage);
     
                         foreach($displayedResults as $product) {
                             include 'includes/product-card-inc.php';
                         } ?>
+                </div>
+
+                <nav aria-label="Navigation des pages résultats de la recherche">
+                    <ul class="pagination flex-wrap">
+                        <?php for($i = 1; $i <= $numberOfPages; $i++) {
+                            echo '<li class="page-item';
+                            if ($_GET['page'] == $i || (!isset($_GET['page']) && $i == 1)) {
+                                echo ' active';
+                            }
+                            echo '"><a class="page-link" href="search-results.php?criteria=' . $_GET['criteria'] 
+                            . '&category=' . $_GET['category'] . '&max_price=' . $_GET['max_price'] 
+                            . '&min_price=' . $_GET['min_price'] . '&sorting=' . $_GET['sorting'] . '&page=' . $i. '">' . $i . '</a></li>';
+                        }?>
+                    </ul>
+                </nav>
 
             <?php } ?>
         </main>

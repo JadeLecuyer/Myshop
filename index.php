@@ -8,9 +8,6 @@
     if(isset($_GET['page']) && $_GET['page'] < 1) {
         $_GET['page'] = 1;
     }
-
-    $children = $db->getAllChildrenIds(1);
-    var_dump($children);
 ?>
 
 <!DOCTYPE HTML>
