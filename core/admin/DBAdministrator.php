@@ -51,7 +51,7 @@ class DBAdministrator extends Database {
             }
             catch (Exception $e) {
                 error_log($e->getMessage() . "\n", 3, $this->errorLogFile);
-                echo 'ERROR: more info in' . $this->errorLogFile . "\n";
+                echo 'ERROR: more info in ' . $this->errorLogFile . "\n";
             }
         } else {
             return $errorMessage;
@@ -335,7 +335,7 @@ class DBAdministrator extends Database {
 
                 // if parameters passed all the tests with no errors add the category to DB
                 if($resultVerif['status'] === 'success') {
-                    $req = $this->dbConnection->prepare('INSERT INTO category (name, parent_id) VALUES (:name, :parent_id)');
+                    $req = $this->dbConnection->prepare('INSERT INTO categories (name, parent_id) VALUES (:name, :parent_id)');
                     try {
                         $addedCategory = $req->execute(array('name' =>$resultVerif['name'], 'parent_id' => $resultVerif['parent_id']));
                         return 'success';

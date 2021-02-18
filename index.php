@@ -8,6 +8,9 @@
     if(isset($_GET['page']) && $_GET['page'] < 1) {
         $_GET['page'] = 1;
     }
+
+    $children = $db->getAllChildrenIds(1);
+    var_dump($children);
 ?>
 
 <!DOCTYPE HTML>
@@ -18,8 +21,9 @@
     <body>    
         <?php require 'includes/layouts/header-inc.php'; ?>
         <main>
+            <?php include 'includes/searchbar-inc.php' ?>
             <div class="container">
-                <div class="row row-cols-1 row-cols-md-3 row-cols-lg-4 row-cols-xxl-4">
+                <div class="row row-cols-1 row-cols-md-3 row-cols-lg-4">
                     <?php $productsPerPage = 12;
                         $numberOfProducts = $db->getCountProducts();
                         $numberOfPages = $numberOfProducts / $productsPerPage;

@@ -69,20 +69,9 @@
                             <label for="parent_id" class="form-label">Catégorie parente directe</label>
                             <select name="parent_id" id="parent_id" class="form-select">
                                 <option value="NULL">Pas de catégorie parente</option>
-                                <?php 
-                                $numberOfCategories = $dbAdmin->getCountCategories();
-                                $categories = $dbAdmin->getCategories($numberOfCategories, 0);
-                                foreach($categories as $cat) {
-                                    if (isset($category) && $category === $cat) {
-                                        echo '';
-                                    } else {
-                                        echo '<option value="' . $cat['id'] . '"';
-                                        if (isset($category) && ($category['parent_id'] === $cat['id'])) {
-                                            echo ' selected ';
-                                        }
-                                        echo '>' . $cat['name'] . '</option>';
-                                    }
-                                }
+                                <?php
+                                $highestLevelCategories = $dbAdmin->getHighestLevelCategories();
+                                $dbAdmin->displayCategoryTree($highestLevelCategories, 0, $category['parent_id']);
                                 ?>
                             </select>
                         </div>

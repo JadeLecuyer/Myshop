@@ -100,8 +100,7 @@
                             <th scope="col">ID</th>
                             <th scope="col">Nom</th>
                             <th scope="col">Prix</th>
-                            <th scope="col">Id de la catégorie parente de plus bas niveau</th>
-                            <th scope="col">Nom de la catégorie parente</th>
+                            <th scope="col">Catégorie parente de plus bas niveau</th>
                             <th scope="col" class="col-md-3">Action</th>
                         </tr>
                     </thead>
@@ -124,7 +123,6 @@
                             echo '<td>' . $product['id'] . '</td>';
                             echo '<td>' . $product['name'] . '</td>' ;
                             echo '<td>' . $product['price'] . '</td>' ;
-                            echo '<td>' . $product['category_id'] . '</td>' ;
                             echo '<td>' . $dbAdmin->getCategory($product['category_id'])['name'] . '</td>' ;
                             echo '<td>
                                 <a href="edit-product.php?id=' . $product['id'] . '" class="btn btn-success my-1">Modifier</a>
@@ -155,7 +153,7 @@
             <a href="admin.php" class="btn btn-secondary mb-2">Retour au choix de la table</a>
             <div class="d-flex justify-content-between align-items-end">
                 <h3 class="my-2">Catégories</h3>
-                <a href="edit-product.php" class="btn btn-primary mb-2">Ajouter une catégorie</a>
+                <a href="edit-category.php" class="btn btn-primary mb-2">Ajouter une catégorie</a>
             </div>
             <div class="table-responsive">
                 <table class="table table-hover">

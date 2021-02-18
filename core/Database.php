@@ -122,4 +122,56 @@ class Database {
             return false;
         }
     }
+
+    public function getHighestLevelCategories() {
+        $req = $this->dbConnection->prepare('SELECT * FROM categories WHERE parent_id IS NULL');
+        $req->execute();
+        return $req->fetchAll(PDO::FETCH_ASSOC);
+    }
+
+    public function getCategoryChildren($id) {
+        $req = $this->dbConnection->prepare('SELECT * FROM categories WHERE parent_id = ?');
+        $req->execute(array($id));
+        return $req->fetchAll(PDO::FETCH_ASSOC);
+    }
+
+    public function displayCategoryTree(array $parentCategories, int $level = 0, $setCategoryId = NULL) {
+        if(!empty($parentCategories)) {
+            foreach ($parentCategories as $parentCategory) {
+                echo '<option value="' . $parentCategory['id'] . '"';
+                if(!is_null($setCategoryId) && $setCategoryId == $parentCategory['id']) {
+                    echo ' selected ';
+                }
+                echo '> ';
+                for ($i = 0; $i < $level; $i++) {
+                    echo '-';
+                }
+                echo ' ' . $parentCategory['name'] . '</option>';
+                $children = $this->getCategoryChildren($parentCategory['id']);
+                if(!empty($children)) {
+                    $nextLevel = $level + 1;
+                    $this->displayCategoryTree($children, $nextLevel, $setCategoryId);
+                }
+            }
+        }
+    }
+
+    public function getDirectChildrenIds($parentId) {
+        $req = $this->dbConnection->prepare('SELECT id FROM categories WHERE parent_id = ?');
+        $req->execute(array($parentId));
+        return  $req->fetchAll(PDO::FETCH_ASSOC);
+    }
+
+    public function getAllChildrenIds($parentId) {
+        $children = $this->getDirectChildrenIds($parentId);
+        if(!empty($children)) {
+            foreach ($children as $child) {
+                $childrenArray[] = $child['id'];
+                if (!empty($this->getDirectChildrenIds($child['id']))) {
+                    $childrenArray = array_merge($childrenArray, $this->getAllChildrenIds($child['id']));
+                }
+            }
+        return $childrenArray;
+        }
+    }
 }

@@ -37,7 +37,6 @@
             }
         }
     }
-
     
 ?>
 
@@ -98,20 +97,18 @@
                 </div>
 
                 <div class="my-3">
-                    <label for="category_id" class="form-label">Catégorie parente de plus bas niveau</label>
-                    <select name="category_id" id="category_id" class="form-select">
-                        <?php 
-                        $numberOfCategories = $dbAdmin->getCountCategories();
-                        $categories = $dbAdmin->getCategories($numberOfCategories, 0);
-                        foreach($categories as $category) {
-                            echo '<option value="' . $category['id'] . '"';
-                            if ($category['id'] === $product['category_id']) {
-                                echo ' selected ';
-                            }
-                            echo '>' . $category['name'] . '</option>';
-                        }
-                        ?>
-                    </select>
+                    <div>
+                        <label for="category_id" class="form-label">Catégorie parente de plus bas niveau</label>
+                        <select name="category_id" id="category_id" class="form-select">
+                            <?php
+                            $highestLevelCategories = $dbAdmin->getHighestLevelCategories();
+                            $dbAdmin->displayCategoryTree($highestLevelCategories, 0, $product['category_id']);
+                            ?>
+                        </select>
+                    </div>
+                    <div>
+                        <div class="form-text">Si vous ne trouvez pas de catégorie correspondant à votre besoin rendez-vous sur la <a href="admin.php?table=categories">table catégorie</a> pour la créer.</div>
+                    </div>
                 </div>
 
                 <button type="submit" class="btn btn-primary my-3">Confirmer</button>
