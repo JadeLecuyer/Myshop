@@ -1,4 +1,6 @@
 <?php
+    session_start();
+
     $title = "Recherche - My Shop";
     $description = "Boutique en ligne My Shop - Résultats de la recherche";
     $currentPage = 'search-results';
@@ -9,9 +11,7 @@
         $_GET['page'] = 1;
     }
 
-    if(empty($_GET)) {
-        $emptyInput[] = 'Renseignez au moins un critère de recherche.';
-    } else {
+    if(!empty($_GET)) {
         $results = $searchDb->searchMatches($_GET['criteria'], $_GET['category'], $_GET['max_price'], 
         $_GET['min price'], $_GET['sorting']);
     }
@@ -28,6 +28,12 @@
         <?php include 'includes/searchbar-inc.php'; ?>
 
             <div class="container">
+                <?php if(empty($_GET)) {
+                    echo '<div class="container">
+                    <div class="alert alert-danger">Veuillez choisir au moins un critère.</div>
+                    <a href="index.php" class="btn btn-secondary">Retour à l\'index</a>
+                    </div>';
+                } ?>
                 <?php if($results['status'] === 'fail') {
                     echo '<div class="alert alert-danger">' . implode("<br>", $results['message']) . '</div>';
                 } elseif($results['status'] === 'success') { ?>

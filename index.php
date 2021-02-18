@@ -1,4 +1,6 @@
 <?php
+    session_start();
+
     $title = "Accueil - My Shop";
     $description = "Boutique en ligne My Shop";
     $currentPage = 'index';

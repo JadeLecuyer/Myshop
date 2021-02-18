@@ -1,4 +1,9 @@
 <?php
+    session_start();
+    if (!isset($_SESSION['id']) || $_SESSION['admin'] !== '1') {
+        header('location: index.php');
+    }
+
     $title = "Administrateur - My Shop";
     $description = "Administration de la boutique en ligne My Shop - Modifier un utilisateur";
     $currentPage = 'edit-user';
@@ -57,7 +62,7 @@
                         <label class="form-check-label" for="is_admin">Oui, cet utilisateur est administrateur</label>
                     </div>
                     <div class="form-check">
-                        <input class="form-check-input" type="radio" name="admin" id="not_admin" value="0" <?= $user['admin'] == 0 ? 'checked' : ''?>>
+                        <input class="form-check-input" type="radio" name="admin" id="not_admin" value="0" <?= ($user['admin'] == 0 || is_null($user['admin'])) ? 'checked' : ''?>>
                         <label class="form-check-label" for="not_admin">Non, cet utilisateur n'est pas administrateur</label>
                     </div>
                 </div>

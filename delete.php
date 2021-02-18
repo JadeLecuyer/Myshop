@@ -1,4 +1,9 @@
 <?php
+    session_start();
+    if (!isset($_SESSION['id']) || $_SESSION['admin'] !== '1') {
+        header('location: index.php');
+    }
+
     $title = "Administrateur - My Shop";
     $description = "Administration de la boutique en ligne My Shop - Supprimer un item";
     $currentPage = 'delete';

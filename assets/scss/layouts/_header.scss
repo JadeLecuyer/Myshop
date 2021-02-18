@@ -5,6 +5,10 @@
     &__band {
         height: 10px;
         background-color: $color-primary;
+
+            &--bigger {
+                height: auto;
+            }
     }
 
     &__logo {

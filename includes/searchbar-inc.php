@@ -49,7 +49,7 @@ $searchBarDb->connect();
                 </div>
             </div>
 
-            <div class="col-12 col-md-3 mt-3 mt-md-0 <?= ($currentPage === 'search-results') ? 'd-block' : 'd-none' ?>">
+            <div class="col-12 col-md-3 mt-3 mt-md-0">
                     <select name="sorting" class="form-select">
                         <option value=""> Options de tri</option>
                         <option value="price_asc" <?= ($_GET['sorting'] === 'price_asc') ? 'selected' : '' ?>>Prix croissant</option>

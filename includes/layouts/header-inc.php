@@ -1,5 +1,8 @@
 <header class="header mb-5">
-    <div class="header__band d-none d-md-block">
+    <div class="header__band d-none d-md-block <?= (isset($_SESSION['username'])) ? 'header__band--bigger' : '' ?>">
+        <?php if(isset($_SESSION['username'])) {
+            echo '<div class="container"><span class="w-100 d-inline-block text-white text-end">Bonjour ' . $_SESSION['username'] .' ! Vous êtes connecté(e)</span></div>';
+        } ?>
     </div>
 
     <nav class="navbar navbar-expand-md p-0">
@@ -17,16 +20,31 @@
                 <div class="d-flex justify-content-between text-uppercase header__nav-wrapper">
                     <ul class="navbar-nav mb-2 mb-md-0">
                         <li class="nav-item">
-                            <a class="nav-link header__nav-link <?= ($currentPage == 'index') ? 'active' : '' ?>" href="index.php">Boutique</a>
+                            <a class="nav-link header__nav-link <?= ($currentPage === 'index') ? 'active' : '' ?>" href="index.php">Boutique</a>
                         </li>
                     </ul>
                     <ul class="navbar-nav mb-2 mb-md-0">
-                        <li class="nav-item">
-                            <a class="nav-link header__nav-link <?= ($currentPage == 'signup') ? 'active' : '' ?>" href="#">S'inscrire</a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link header__nav-link <?= ($currentPage == 'signin') ? 'active' : '' ?>" href="#">Se connecter</a>
-                        </li>
+                    <?php
+                            if(isset($_SESSION['username']))
+                            {
+                                echo '<li class="nav-item">
+                                    <a class="nav-link header__nav-link" href="logout.php">Se déconnecter</a>
+                                    </li>';
+                            }
+                            else
+                            { ?>
+                                  <li class="nav-item">
+                                    <a class="nav-link header__nav-link <?= ($currentPage === 'signup') ? 'active' : '' ?>" href="signup.php">S'inscrire</a>
+                                    </li>
+                                    <li class="nav-item">
+                                    <a class="nav-link header__nav-link <?= ($currentPage === 'signin') ? 'active' : '' ?>" href="signin.php">Se connecter</a>
+                                    </li>
+                            <?php } ?>
+                        <?php if (isset($_SESSION['id']) && $_SESSION['admin'] === '1') { ?>
+                            <li class="nav-item">
+                                <a class="nav-link header__nav-link <?= (in_array($currentPage, ['admin', 'delete', 'edit-user', 'edit-product', 'edit-category'])) ? 'active' : '' ?>" href="admin.php">Administration</a>
+                            </li>
+                        <?php } ?>
                     </ul>
                 </div>
             </div>

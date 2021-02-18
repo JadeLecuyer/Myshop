@@ -1,4 +1,9 @@
 <?php
+    session_start();
+    if (!isset($_SESSION['id']) || $_SESSION['admin'] !== '1') {
+        header('location: index.php');
+    }
+
     $title = "Administrateur - My Shop";
     $description = "Administration de la boutique en ligne My Shop";
     $currentPage = 'admin';
@@ -19,7 +24,7 @@
         <?php require 'includes/layouts/header-inc.php'; ?>
         <main>
         <div class="container">
-            <h2 class="my-4">Bonjour Administrateur</h2>
+            <h2 class="my-4">Bonjour <?= $_SESSION['username'] ?></h2>
         </div>
         <?php if($_GET['table'] == 'users') { ?>
 
