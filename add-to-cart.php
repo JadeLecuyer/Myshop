@@ -6,9 +6,11 @@
     $addedProduct = $userCart->addToCart($_GET['id']);
     }
 
-    if(!isset($_GET['id']) || $addedProduct === false) {
+    if(!isset($_GET['id']) || $addedProduct === 'wrongid') {
         header('location: index.php?carterror=wrongid');
-    } else {
+    } elseif($addedProduct === 'alreadyadded') {
+        header('location: index.php?carterror=alreadyadded');
+    } elseif($addedProduct === 'success') {
         header('location: index.php');
     }
 ?>

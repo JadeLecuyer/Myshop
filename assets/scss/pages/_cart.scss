@@ -1,9 +1,20 @@
-.block-cart {
+.card-cart {
 
     &__product-img {
         height: 10rem;
         width: 10rem;
         object-fit: cover;
         object-position: 50% 50%;
+    }
+
+    &__delete-logo {
+        height: 1.5rem;
+        width: auto;
+        color: var(--bs-dark);
+        transition: color 300ms ease-out;
+
+        &:hover {
+            color: $color-primary;
+        }
     }
 }

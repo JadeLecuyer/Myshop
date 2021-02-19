@@ -25,6 +25,8 @@
                 <?php if(isset($_GET['carterror'])) {
                     if ($_GET['carterror'] === 'wrongid') {
                         echo '<div class="alert alert-danger">Le produit n\'existe pas : il n\'a pas pu être ajouté à votre panier.</div>';
+                    } elseif($_GET['carterror'] === 'alreadyadded') {
+                        echo '<div class="alert alert-danger">Ce produit est déjà dans votre panier, impossible de l\'ajouter de nouveau.</div>';
                     } elseif($_GET['carterror'] === 'wrongdelete') {
                         echo '<div class="alert alert-danger">Impossible de supprimer de votre panier un produit inexistant ou n\'y étant pas.</div>';
                     } 

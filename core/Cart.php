@@ -16,11 +16,13 @@ class Cart extends Database {
     }
 
     public function addToCart($product_id) {
-        if($this->getProduct($product_id)) {
+        if(!$this->getProduct($product_id)) {
+            return 'wrongid';
+        } elseif(isset($_SESSION['cart'][$product_id])) {
+            return 'alreadyadded';
+        } else {     
             $_SESSION['cart'][$product_id] = [];
-            return true;
-        } else {
-            return false;
+            return 'success';
         }
     }
 

@@ -21,42 +21,37 @@
         <?php require 'includes/layouts/header-inc.php'; ?>
         <main>
         <div class="container">
-            <h4>Bonjour <?= isset($_SESSION['username']) ? $_SESSION['username'] : 'invité' ?>, voici votre panier</h4>
-            <div class="table-responsive">
-                    <table class="table table-hover">
-                        <thead>
-                            <tr>
-                                <th scope="col">Photo</th>
-                                <th scope="col">Nom</th>
-                                <th scope="col">Prix</th>
-                                <th scope="col">Action</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                        <?php 
-                        $productsIds = array_keys($_SESSION['cart']);
-                        $totalPrice = 0;
-                        foreach($productsIds as $productId) {
-                            $product = $userCart->getProduct($productId);
-                            $totalPrice += floatval($product['price']);
-                            echo '<tr>';
-                            echo '<td><img src="' . $product['img'] . '" class="block-cart__product-img"></td>';
-                            echo '<td>' . $product['name'] . '</td>' ;
-                            echo '<td>' . $product['price'] . '€</td>' ;
-                            echo '<td>
-                                <a href="delete-from-cart.php?id=' . $product['id'] . '" class="btn btn-danger">Supprimer</a>
-                                </td>';
-                            echo '</tr>' ;
-                        }
-                        ?>
-                        </tbody>
-                        <tfoot>
-                            <tr>
-                                <th colspan="2">Prix total</th>
-                                <td colspan="2"><?= $totalPrice ?>€</td>
-                            </tr>
-                        </tfoot>
-                </table>
+            <!-- <h4 class="text-uppercase">Bonjour <?= isset($_SESSION['username']) ? $_SESSION['username'] : 'invité' ?>, voici votre panier</h4> -->
+            <h4 class="text-uppercase">Mon panier</h4>
+
+            <?php 
+            $productsIds = array_keys($_SESSION['cart']);
+            $totalPrice = 0;
+            foreach($productsIds as $productId) {
+                $product = $userCart->getProduct($productId);
+                $totalPrice += floatval($product['price']); ?>
+                <div class="w-75 m-auto py-3 d-flex flex-column flex-md-row">
+                    <div class="me-3">
+                        <a href="viewproduct.php?id=<?= $product['id'] ?>">
+                            <img src="<?= $product['img'] ?>" alt="<?= $product['name'] ?>" class="card-cart__product-img">
+                        </a>
+                    </div>
+                    <div class="d-flex flex-column justify-content-between">
+                        <div>
+                            <div class="card-cart__price fw-bold fs-5"><?= $product['price'] ?>€</div>
+                            <div><a href="viewproduct.php?id=<?= $product['id'] ?>" class="link-dark text-decoration-none"><?= $product['name'] ?></a></div>
+                        </div>
+                        <a href="delete-from-cart.php?id=<?=$product['id']?>">
+                            <svg xmlns="http://www.w3.org/2000/svg" fill="currentColor" class="bi bi-trash card-cart__delete-logo" viewBox="0 0 16 16">
+                                <path d="M5.5 5.5A.5.5 0 0 1 6 6v6a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5zm2.5 0a.5.5 0 0 1 .5.5v6a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5zm3 .5a.5.5 0 0 0-1 0v6a.5.5 0 0 0 1 0V6z"/>
+                                <path fill-rule="evenodd" d="M14.5 3a1 1 0 0 1-1 1H13v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V4h-.5a1 1 0 0 1-1-1V2a1 1 0 0 1 1-1H6a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1h3.5a1 1 0 0 1 1 1v1zM4.118 4L4 4.059V13a1 1 0 0 0 1 1h6a1 1 0 0 0 1-1V4.059L11.882 4H4.118zM2.5 3V2h11v1h-11z"/>
+                            </svg>
+                        </a>
+                    </div>
+                </div>
+            <?php } ?>
+            <div class="fs-5">
+                <span class="text-uppercase fw-bold">Total :</span>  <?= $totalPrice ?>€
             </div>
         </div>
         </main>
