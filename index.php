@@ -22,6 +22,14 @@
         <main>
             <?php include 'includes/searchbar-inc.php' ?>
             <div class="container">
+                <?php if(isset($_GET['carterror'])) {
+                    if ($_GET['carterror'] === 'wrongid') {
+                        echo '<div class="alert alert-danger">Le produit n\'existe pas : il n\'a pas pu être ajouté à votre panier.</div>';
+                    } elseif($_GET['carterror'] === 'wrongdelete') {
+                        echo '<div class="alert alert-danger">Impossible de supprimer de votre panier un produit inexistant ou n\'y étant pas.</div>';
+                    } 
+                }
+                ?>
                 <div class="row row-cols-1 row-cols-md-3 row-cols-lg-4">
                     <?php $productsPerPage = 12;
                         $numberOfProducts = $db->getCountProducts();

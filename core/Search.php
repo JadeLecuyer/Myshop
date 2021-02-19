@@ -3,6 +3,25 @@ require_once 'DBconfig.php';
 require_once 'core/Database.php';
 
 class Search extends Database {
+
+    public function getDirectChildrenIds($parentId) {
+        $req = $this->dbConnection->prepare('SELECT id FROM categories WHERE parent_id = ?');
+        $req->execute(array($parentId));
+        return  $req->fetchAll(PDO::FETCH_ASSOC);
+    }
+
+    public function getAllChildrenIds($parentId) {
+        $children = $this->getDirectChildrenIds($parentId);
+        if(!empty($children)) {
+            foreach ($children as $child) {
+                $childrenArray[] = $child['id'];
+                if (!empty($this->getDirectChildrenIds($child['id']))) {
+                    $childrenArray = array_merge($childrenArray, $this->getAllChildrenIds($child['id']));
+                }
+            }
+        return $childrenArray;
+        }
+    }
     
     /**
      * buildQuery

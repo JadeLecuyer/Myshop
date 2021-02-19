@@ -1,0 +1,9 @@
+.block-cart {
+
+    &__product-img {
+        height: 10rem;
+        width: 10rem;
+        object-fit: cover;
+        object-position: 50% 50%;
+    }
+}
