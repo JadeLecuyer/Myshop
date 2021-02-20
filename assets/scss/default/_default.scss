@@ -1,3 +1,11 @@
+html, body{
+    height: 100%;
+}
+
 main {
-    min-height: 60vh;
+    min-height: calc(100vh - 100px - 114px - 96px);
+
+    @media screen and (max-width: #{$phone}) {
+        min-height: calc(100vh - 75px - 60px - 96px);
+    }
 }
