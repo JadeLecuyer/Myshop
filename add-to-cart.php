@@ -11,6 +11,6 @@
     } elseif($addedProduct === 'alreadyadded') {
         header('location: index.php?carterror=alreadyadded');
     } elseif($addedProduct === 'success') {
-        header('location: index.php');
+        header('location: user-cart.php');
     }
 ?>
