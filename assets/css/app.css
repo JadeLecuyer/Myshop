@@ -73,6 +73,7 @@ main {
         font-size: 0.75rem; } }
 
 .footer {
+  margin-top: 3rem;
   background-color: #bed243; }
   .footer__logo {
     height: 100px;
@@ -80,6 +81,8 @@ main {
     @media screen and (max-width: 768px) {
       .footer__logo {
         height: 75px; } }
+  .footer--guest {
+    margin-top: calc(3rem + 14px); }
 
 #main {
   min-height: 100%; }

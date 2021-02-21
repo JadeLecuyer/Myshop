@@ -1,4 +1,4 @@
-    <footer class="footer w-100 mt-5">
+    <footer class="footer w-100 <?= isset($_SESSION['id']) ? '' : 'footer--guest'?>">
         <div class="container-fluid d-flex justify-content-center">
             <a href="index.php">
                 <img src="/assets/img/whitelogo.png" alt="Brand logo" class="footer__logo">

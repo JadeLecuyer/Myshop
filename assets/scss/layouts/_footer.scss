@@ -1,4 +1,5 @@
 .footer {
+    margin-top: 3rem;
     background-color: $color-primary;
 
     &__logo {
@@ -8,5 +9,9 @@
         @media screen and (max-width: #{$phone}) {
             height: 75px;
         }
+    }
+
+    &--guest {
+        margin-top: calc(3rem + 14px);
     }
 } 
