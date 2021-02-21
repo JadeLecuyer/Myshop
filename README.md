@@ -10,12 +10,13 @@ language: PHP, HTML, CSS
 
 ## Content
 
-    admin.php        edit-category.php  (node_modules)        signin.php
-    (assets)          edit-product.php    package.json         signup.php
-    (core)            edit-user.php       package-lock.json    viewproduct.php
-    (database dump)  (includes)          (products)
-    DBconfig.php     index.php           README.md
-    delete.php       logout.php          search-results.php
+    add-to-cart.php       delete.php          (node_modules)       signup.php
+    admin.php             edit-category.php   package.json         user-cart.php
+    (assets)              edit-product.php    package-lock.json    viewproduct.php     
+    (core)                edit-user.php       (products)    
+    (database dump)       (includes)          README.md
+    DBconfig.php          index.php           search-results.php
+    delete-from-cart.php  logout.php          signin.php
 
 
  Folders & website Hierachy
